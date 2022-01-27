@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  smee-client:
+    build:
+      context: .
+      dockerfile: Dockerfile.smee
+    command: ["--target", "http://0.0.0.0:3000/api/webhook", "--url", "${SMEE_URL}"]
+    environment:
+      SMEE_URL: ${SMEE_URL}
+    network_mode: host

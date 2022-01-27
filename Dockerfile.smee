@@ -1,0 +1,6 @@
+FROM node:17
+
+RUN npm install --global smee-client
+
+ENTRYPOINT ["smee"]
+CMD ["--help"]
