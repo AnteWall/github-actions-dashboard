@@ -5,7 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.smee
-    command: ["--target", "http://0.0.0.0:3000/api/webhook", "--url", "${SMEE_URL}"]
+    command: ["--target", "http://app:3000/api/webhook", "--url", "${SMEE_URL}"]
     environment:
       SMEE_URL: ${SMEE_URL}
-    network_mode: host
+  app:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    volumes:
+       - ./:/usr/src/app/
