@@ -1,7 +1,11 @@
 import { parse } from "date-fns";
 import React, { createContext, useCallback, useMemo, useState } from "react";
 
-import { WorkflowJobEvent, WorkflowRunEvent } from "../github/workflows/types";
+import {
+  Step,
+  WorkflowJobEvent,
+  WorkflowRunEvent,
+} from "../github/workflows/types";
 import { applyWorkflowJobEvent, applyWorkflowRunEvent } from "../utils/jobs";
 
 export interface GlobalContextState {
@@ -22,6 +26,7 @@ export interface WorkflowRun {
   status: string;
   conclusion: string;
   started_at: Date;
+  steps: Step[];
 }
 
 export interface RepoWorkflow {

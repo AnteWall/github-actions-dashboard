@@ -4,7 +4,7 @@ import { RepoState } from "../../context/GlobalState";
 import { Flipper, Flipped } from "react-flip-toolkit";
 import { UilGithub } from "@iconscout/react-unicons";
 import RunStatus, { statusToColor } from "./components/RunStatus/RunStatus";
-
+import WorkflowProgress from "./components/WorkflowProgress";
 const RepositoryWorkflows: React.FC<{ repo: RepoState }> = ({ repo }) => {
   const theme = useMantineTheme();
 
@@ -13,7 +13,7 @@ const RepositoryWorkflows: React.FC<{ repo: RepoState }> = ({ repo }) => {
       shadow="sm"
       padding="lg"
       sx={(theme) => ({
-        marginTop: "1rem",
+        margin: "1rem",
         backgroundColor: theme.colors.gray[8],
       })}
     >
@@ -49,24 +49,48 @@ const RepositoryWorkflows: React.FC<{ repo: RepoState }> = ({ repo }) => {
                 })}
                 padding="lg"
               >
-                <Title
+                <Box
                   sx={() => ({
-                    textShadow: "0px 0px 6px #000000",
-                    marginBottom: "2px",
-                  })}
-                  order={4}
-                >
-                  {w.name}
-                </Title>
-                <Card
-                  padding="sm"
-                  sx={() => ({
+                    padding: "0.4rem 0 0.4rem 1rem",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                     display: "flex",
                   })}
                 >
-                  {w.runs.map((r) => {
-                    return <RunStatus key={r.id} run={r} />;
-                  })}
+                  <Title
+                    sx={() => ({
+                      textShadow: "0px 0px 6px #000000",
+                      marginBottom: "2px",
+                    })}
+                    order={3}
+                  >
+                    {w.name}
+                  </Title>
+                </Box>
+                <Card padding="sm">
+                  <Box
+                    sx={() => ({
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      display: "flex",
+                    })}
+                  >
+                    <Box
+                      sx={() => ({
+                        display: "flex",
+                      })}
+                    >
+                      {w.runs.map((r) => {
+                        return <RunStatus key={r.id} run={r} />;
+                      })}
+                    </Box>
+                    <Box sx={() => ({})}>
+                      <WorkflowProgress
+                        conclusion={w.runs[0]?.conclusion}
+                        steps={w.runs[0].steps}
+                      />
+                    </Box>
+                  </Box>
                 </Card>
               </Card>
             </Flipped>

@@ -6,9 +6,14 @@ import {
   WorkflowRunEvent,
 } from "./../github/workflows/types";
 
-function editById<T extends { id: string }>(arr: T[], data: T) {
-  if (arr.find((x) => x.id === data.id)) {
-    return arr.map((x) => (x.id === data.id ? { ...x, ...data } : x));
+function editById<T extends { id: string }>(
+  arr: T[],
+  data: T,
+  overrideId = null
+) {
+  const id = overrideId || data.id;
+  if (arr.find((x) => x.id === id)) {
+    return arr.map((x) => (x.id === id ? { ...x, ...data } : x));
   }
   return [...arr, { ...data }];
 }
@@ -44,6 +49,7 @@ const applyJobUpdate = (
     status: job.workflow_job.status,
     conclusion: job.workflow_job.conclusion,
     started_at: parseISO(job.workflow_job.started_at),
+    steps: job.workflow_job.steps,
   };
   if (!jobRun) {
     return [...arr, editObj];
@@ -61,17 +67,15 @@ const applyWorkflowUpdate = (
   const workflow = arr.find((r) =>
     r.runs.some((run) => run.id === job.workflow_job.run_id.toString())
   );
+  const editObj: RepoWorkflow = {
+    id: workflow.id || job.workflow_job.run_id.toString(),
+    name: workflow.name || job.workflow_job.name,
+    runs: applyJobUpdate(workflow.runs || [], job).sort(sortByDate),
+  };
   if (!workflow) {
-    return [
-      ...arr,
-      {
-        id: job.workflow_job.run_id.toString(),
-        name: job.workflow_job.name,
-        runs: applyJobUpdate([], job).sort(sortByDate),
-      },
-    ].sort(sortByDateWorkflow);
+    return [...arr, editObj].sort(sortByDateWorkflow);
   }
-  return arr.sort(sortByDateWorkflow);
+  return editById(arr, editObj).sort(sortByDateWorkflow);
 };
 
 export const applyWorkflowJobEvent = (
@@ -106,6 +110,7 @@ const applyJobRunUpdate = (
     status: run.workflow_run.status,
     conclusion: run.workflow_run.conclusion,
     started_at: parseISO(run.workflow_run.run_started_at),
+    steps: jobRun?.steps || [],
   };
 
   if (!jobRun) {

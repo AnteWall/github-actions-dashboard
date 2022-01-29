@@ -17,7 +17,6 @@ export const statusToColor = (status: string, theme: MantineTheme): string => {
     case "in_progress":
       return theme.colors.yellow[3];
     default:
-      console.warn("unknown state", status);
       return theme.colors.gray[5];
   }
 };
